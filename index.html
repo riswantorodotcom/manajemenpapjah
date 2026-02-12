@@ -3,153 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Keuangan Dashboard</title>
+    <title>Boss Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; }
-        .skeleton { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; background-color: #e2e8f0; color: transparent; border-radius: 4px; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+        body { font-family: 'Outfit', sans-serif; background-color: #0f172a; color: white; -webkit-tap-highlight-color: transparent; }
+        
+        /* Glass Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glass-active {
+            background: rgba(59, 130, 246, 0.15); /* Blue tint */
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        /* Avatar Active Ring */
+        .avatar-active img { border: 3px solid #3b82f6; padding: 2px; }
+        .avatar-inactive img { border: 3px solid transparent; opacity: 0.6; }
+
+        /* Hide Scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Skeleton Animation */
+        .skeleton {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            color: transparent !important;
+            border-radius: 4px;
+        }
+        @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     </style>
 </head>
-<body class="text-gray-800">
+<body class="min-h-screen pb-24 relative overflow-x-hidden">
 
-    <div class="max-w-md mx-auto min-h-screen bg-gray-50 relative pb-24 shadow-2xl">
+    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/10 rounded-full blur-[100px]"></div>
+        <div class="absolute bottom-[20%] right-[-10%] w-80 h-80 bg-purple-600/10 rounded-full blur-[100px]"></div>
+    </div>
+
+    <div class="max-w-md mx-auto relative">
         
-        <div class="px-6 pt-10 pb-6 flex justify-between items-center bg-white sticky top-0 z-20 shadow-sm">
-            <div>
-                <p class="text-xs text-gray-400 font-medium">Dashboard Keuangan</p>
-                <h1 class="text-xl font-bold text-gray-800" id="user-name">Memuat...</h1>
-            </div>
-            <div class="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 shadow-sm">
-                <i class="fa-solid fa-user"></i>
+        <div class="pt-8 pb-2 pl-6">
+            <p class="text-xs text-slate-400 font-medium mb-3 uppercase tracking-wider">Pilih Tim:</p>
+            <div class="flex gap-4 overflow-x-auto no-scrollbar pr-6" id="user-list-container">
+                </div>
+        </div>
+
+        <div class="px-6 my-4">
+            <div class="p-1 glass rounded-xl flex gap-1 relative">
+                <button onclick="switchTab('cashflow')" id="btn-cashflow" class="flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300">
+                    CASHFLOW
+                </button>
+                <button onclick="switchTab('gamping')" id="btn-gamping" class="flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300">
+                    GAMPING
+                </button>
             </div>
         </div>
 
-        <div class="px-5 mt-4 space-y-5">
-
-            <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden transform transition hover:scale-[1.02]">
-                <div class="absolute -top-12 -right-12 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+        <div class="px-6 mb-6">
+            <div class="relative w-full aspect-[1.8/1] rounded-2xl overflow-hidden shadow-2xl group">
+                <div class="absolute inset-0 bg-gradient-to-br from-slate-800 to-black transition-all duration-500 group-hover:scale-105"></div>
+                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
                 
-                <p class="text-slate-400 text-xs mb-1 font-medium tracking-wide">TOTAL SALDO ASET</p>
-                <h2 class="text-3xl font-bold tracking-tight mb-6" id="total-saldo">
-                    <span class="skeleton">Rp 00.000.000</span>
-                </h2>
-                
-                <div class="flex items-center gap-2 bg-white/10 w-fit px-3 py-1.5 rounded-lg backdrop-blur-md border border-white/10">
-                    <i class="fa-solid fa-wallet text-emerald-400 text-sm"></i>
-                    <span class="text-xs font-medium text-slate-200" id="tab-name">Cashflow</span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1">
-                    <div class="w-8 h-8 bg-green-50 rounded-full flex items-center justify-center text-green-600 mb-1">
-                        <i class="fa-solid fa-arrow-down text-sm"></i>
-                    </div>
-                    <p class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Pemasukan</p>
-                    <p class="font-bold text-gray-800 text-sm" id="total-masuk"><span class="skeleton">Rp 0</span></p>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-1">
-                    <div class="w-8 h-8 bg-red-50 rounded-full flex items-center justify-center text-red-600 mb-1">
-                        <i class="fa-solid fa-arrow-up text-sm"></i>
-                    </div>
-                    <p class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Pengeluaran</p>
-                    <p class="font-bold text-gray-800 text-sm" id="total-keluar"><span class="skeleton">Rp 0</span></p>
-                </div>
-            </div>
-
-            <div>
-                <div class="flex justify-between items-end mb-4 px-1">
-                    <h3 class="font-bold text-gray-800 text-lg">Transaksi Terakhir</h3>
-                    <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">5 Terbaru</span>
-                </div>
-                
-                <div id="transaksi-list" class="space-y-3">
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gray-200 skeleton"></div>
-                            <div class="space-y-2">
-                                <div class="h-3 w-24 bg-gray-200 skeleton rounded"></div>
-                                <div class="h-2 w-16 bg-gray-200 skeleton rounded"></div>
-                            </div>
+                <div class="relative z-10 p-6 flex flex-col justify-between h-full">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-slate-400 text-[10px] font-semibold tracking-widest uppercase">Total Saldo</p>
+                            <h2 class="text-2xl font-bold text-white mt-1 tracking-tight" id="total-saldo"><span class="skeleton">Rp 00.000.000</span></h2>
                         </div>
-                        <div class="h-3 w-20 bg-gray-200 skeleton rounded"></div>
+                        <i class="fa-brands fa-cc-visa text-3xl text-white/20"></i>
+                    </div>
+
+                    <div class="flex gap-4 mt-2">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-1 mb-1">
+                                <div class="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                                    <i class="fa-solid fa-arrow-down text-[8px] text-emerald-400"></i>
+                                </div>
+                                <span class="text-[10px] text-slate-400">Masuk</span>
+                            </div>
+                            <p class="text-xs font-semibold text-white" id="total-masuk"><span class="skeleton">Rp 0</span></p>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-1 mb-1">
+                                <div class="w-4 h-4 rounded-full bg-rose-500/20 flex items-center justify-center">
+                                    <i class="fa-solid fa-arrow-up text-[8px] text-rose-400"></i>
+                                </div>
+                                <span class="text-[10px] text-slate-400">Keluar</span>
+                            </div>
+                            <p class="text-xs font-semibold text-white" id="total-keluar"><span class="skeleton">Rp 0</span></p>
+                        </div>
                     </div>
                 </div>
             </div>
-            
         </div>
 
-        <button onclick="location.reload()" class="fixed bottom-6 right-6 bg-blue-600 text-white w-14 h-14 rounded-full shadow-lg shadow-blue-600/40 flex items-center justify-center text-xl active:scale-90 transition-transform z-30 hover:bg-blue-700">
-            <i class="fa-solid fa-rotate-right"></i>
-        </button>
+        <div class="px-6 pb-20">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-md font-bold text-white">Riwayat Transaksi</h3>
+                <span class="text-[10px] text-blue-400 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20">Terbaru</span>
+            </div>
+
+            <div id="loading-list" class="space-y-3 hidden">
+                <div class="glass p-4 rounded-xl flex items-center gap-3 animate-pulse">
+                    <div class="w-10 h-10 rounded-full bg-slate-700"></div>
+                    <div class="flex-1 space-y-2">
+                        <div class="h-2 w-20 bg-slate-700 rounded"></div>
+                        <div class="h-2 w-12 bg-slate-700 rounded"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="transaksi-list" class="space-y-3">
+                </div>
+        </div>
 
     </div>
 
+    <div class="fixed bottom-6 left-6 right-6 max-w-md mx-auto z-50">
+        <div class="glass rounded-2xl p-3 flex justify-around items-center shadow-2xl backdrop-blur-xl bg-black/40">
+            <button class="flex flex-col items-center gap-1 text-blue-400 transition transform active:scale-95">
+                <i class="fa-solid fa-house text-lg"></i>
+            </button>
+            <button class="flex flex-col items-center gap-1 text-slate-500 hover:text-white transition transform active:scale-95">
+                <i class="fa-solid fa-chart-pie text-lg"></i>
+            </button>
+            <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white -mt-8 border-4 border-[#0f172a] shadow-lg shadow-blue-600/30 active:scale-90 transition">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            <button class="flex flex-col items-center gap-1 text-slate-500 hover:text-white transition transform active:scale-95">
+                <i class="fa-solid fa-file-invoice text-lg"></i>
+            </button>
+            <button onclick="fetchData()" class="flex flex-col items-center gap-1 text-slate-500 hover:text-white transition transform active:scale-95">
+                <i class="fa-solid fa-rotate-right text-lg"></i>
+            </button>
+        </div>
+    </div>
+
     <script>
-        // URL Google Script Milikmu (Sudah Terpasang)
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxWwXG9K2lsdLdPXsqxWnWpTMMS6Ea-Izb8hl0PRWAZa2jCxPp4ux9TjRNef8Ryd922/exec';
+        // ==========================================
+        // KONFIGURASI LINK SCRIPT (GANTI INI!)
+        // ==========================================
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxWwXG9K2lsdLdPXsqxWnWpTMMS6Ea-Izb8hl0PRWAZa2jCxPp4ux9TjRNef8Ryd922/exec';
+        
+        // Data Tim (ID harus sesuai dengan USER_MAP di Google Script)
+        const teamMembers = [
+            { id: '197364854', name: 'Wawan', color: '0D8ABC' },
+            { id: '5670063936', name: 'Yudi', color: 'E11D48' },
+            { id: '8099864512', name: 'Dimas', color: 'F59E0B' },
+            { id: '7905827469', name: 'Erny', color: '10B981' }
+        ];
+
+        // State Aplikasi
+        let activeUser = '197364854'; // Default Wawan
+        let activeTab = 'cashflow';   // Default Tab
+
+        // Render User List saat load
+        function renderUserList() {
+            const container = document.getElementById('user-list-container');
+            container.innerHTML = '';
+            
+            teamMembers.forEach(user => {
+                const isActive = user.id === activeUser;
+                const activeClass = isActive ? 'avatar-active' : 'avatar-inactive grayscale hover:grayscale-0';
+                
+                const html = `
+                    <button onclick="changeUser('${user.id}')" class="flex flex-col items-center gap-1 min-w-[60px] transition-all duration-300 ${activeClass}">
+                        <div class="w-14 h-14 rounded-full p-[2px] bg-gradient-to-tr from-slate-700 to-slate-800 shadow-lg">
+                            <img src="https://ui-avatars.com/api/?name=${user.name}&background=${user.color}&color=fff&size=128" 
+                                 class="w-full h-full rounded-full object-cover transition-transform duration-300 ${isActive ? 'scale-100' : 'scale-90'}">
+                        </div>
+                        <span class="text-[10px] font-semibold tracking-wide ${isActive ? 'text-white' : 'text-slate-500'}">${user.name}</span>
+                    </button>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        // Ganti User
+        function changeUser(id) {
+            if (activeUser === id) return;
+            activeUser = id;
+            renderUserList();
+            fetchData();
+        }
+
+        // Ganti Tab (Cashflow/Gamping)
+        function switchTab(tab) {
+            activeTab = tab;
+            
+            // Update UI Button
+            const btnCashflow = document.getElementById('btn-cashflow');
+            const btnGamping = document.getElementById('btn-gamping');
+            
+            if (tab === 'cashflow') {
+                btnCashflow.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300 bg-blue-600 text-white shadow-lg shadow-blue-600/30";
+                btnGamping.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300 text-slate-400 hover:text-white hover:bg-white/5";
+            } else {
+                btnGamping.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300 bg-blue-600 text-white shadow-lg shadow-blue-600/30";
+                btnCashflow.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300 text-slate-400 hover:text-white hover:bg-white/5";
+            }
+            
+            fetchData();
+        }
 
         async function fetchData() {
+            // UI Loading State
+            document.getElementById('loading-list').classList.remove('hidden');
+            document.getElementById('transaksi-list').classList.add('hidden');
+            document.getElementById('total-saldo').innerHTML = '<span class="skeleton">Rp 00000</span>';
+            
             try {
-                // 1. Ambil Data dari Google
-                const response = await fetch(scriptURL);
+                // Panggil API dengan ID User & Tab yang aktif
+                const response = await fetch(`${SCRIPT_URL}?uid=${activeUser}&tab=${activeTab}`);
                 const data = await response.json();
 
                 if (data.error) {
-                    alert("Gagal: " + data.msg);
-                    return;
-                }
-
-                // 2. Update Tampilan Atas
-                document.getElementById('user-name').innerText = data.nama || "Owner";
-                document.getElementById('tab-name').innerText = data.tab || "Cashflow";
-                document.getElementById('total-saldo').innerText = data.saldo;
-                document.getElementById('total-masuk').innerText = data.masuk;
-                document.getElementById('total-keluar').innerText = data.keluar;
-
-                // 3. Update List Transaksi
-                const listContainer = document.getElementById('transaksi-list');
-                listContainer.innerHTML = ''; // Hapus skeleton loading
-
-                if (data.riwayat && data.riwayat.length > 0) {
-                    data.riwayat.forEach(trx => {
-                        // Tentukan warna uang (Hijau masuk, Merah keluar)
-                        const warnaUang = trx.tipe === 'masuk' ? 'text-green-600' : 'text-red-600';
-                        const tanda = trx.tipe === 'masuk' ? '+' : '-';
-                        const iconBg = trx.tipe === 'masuk' ? 'bg-green-50 text-green-500' : 'bg-orange-50 text-orange-500';
-
-                        // Template HTML per baris
-                        const htmlItem = `
-                            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center hover:bg-gray-50 transition">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full ${iconBg} flex items-center justify-center text-lg shadow-inner">
-                                        <i class="fa-solid ${trx.icon || 'fa-bag-shopping'}"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-semibold text-gray-700 line-clamp-1">${trx.item}</p>
-                                        <p class="text-xs text-gray-400 font-medium">${trx.tgl}</p>
-                                    </div>
-                                </div>
-                                <span class="text-sm font-bold ${warnaUang} whitespace-nowrap">${tanda} ${trx.nominal}</span>
-                            </div>
-                        `;
-                        listContainer.innerHTML += htmlItem;
-                    });
+                    // Handle jika user tidak punya tab tersebut (misal Yudi gak punya Gamping)
+                    document.getElementById('total-saldo').innerText = "Tidak Ada Data";
+                    document.getElementById('total-masuk').innerText = "-";
+                    document.getElementById('total-keluar').innerText = "-";
+                    document.getElementById('transaksi-list').innerHTML = `<div class="text-center text-slate-500 py-6 text-xs">Data ${activeTab} tidak ditemukan untuk user ini.</div>`;
                 } else {
-                    listContainer.innerHTML = '<p class="text-center text-gray-400 text-sm py-4">Belum ada transaksi bulan ini.</p>';
+                    // Update Angka
+                    document.getElementById('total-saldo').innerText = data.saldo;
+                    document.getElementById('total-masuk').innerText = data.masuk;
+                    document.getElementById('total-keluar').innerText = data.keluar;
+
+                    // Render List
+                    const listContainer = document.getElementById('transaksi-list');
+                    listContainer.innerHTML = '';
+
+                    if (data.riwayat && data.riwayat.length > 0) {
+                        data.riwayat.forEach((trx, index) => {
+                            const isMasuk = trx.tipe === 'masuk';
+                            const colorClass = isMasuk ? 'text-emerald-400' : 'text-rose-400';
+                            const iconColor = isMasuk ? 'text-emerald-400' : 'text-rose-400';
+                            const bgIcon = isMasuk ? 'bg-emerald-500/10' : 'bg-rose-500/10';
+                            
+                            // Delay animasi agar muncul satu-satu
+                            const delay = index * 100;
+
+                            const html = `
+                                <div class="glass p-4 rounded-xl flex justify-between items-center active:scale-95 transition transform duration-200 hover:bg-white/5" style="animation: fadeInUp 0.5s ease forwards ${delay}ms">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full ${bgIcon} flex items-center justify-center text-lg border border-white/5">
+                                            <i class="fa-solid ${trx.icon || 'fa-bag-shopping'} ${iconColor}"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-medium text-slate-200 line-clamp-1">${trx.item}</p>
+                                            <p class="text-[10px] text-slate-500">${trx.tgl}</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm font-bold ${colorClass} whitespace-nowrap">${isMasuk?'+':'-'} ${trx.nominal}</span>
+                                </div>
+                            `;
+                            listContainer.innerHTML += html;
+                        });
+                    } else {
+                        listContainer.innerHTML = '<div class="text-center text-slate-500 py-6 text-xs">Belum ada transaksi bulan ini.</div>';
+                    }
                 }
 
             } catch (error) {
-                console.error("Error:", error);
-                document.getElementById('total-saldo').innerHTML = '<span class="text-red-400 text-sm">Gagal memuat data</span>';
+                console.error(error);
+            } finally {
+                // Matikan Loading
+                document.getElementById('loading-list').classList.add('hidden');
+                document.getElementById('transaksi-list').classList.remove('hidden');
             }
         }
 
-        // Jalankan saat web dibuka
-        window.onload = fetchData;
+        // Initialize
+        renderUserList();
+        switchTab('cashflow'); // Set default UI state
+
     </script>
 </body>
 </html>
