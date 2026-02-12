@@ -3,42 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Boss Dashboard</title>
+    <title>Keuangan Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <style>
         body { font-family: 'Outfit', sans-serif; background-color: #0f172a; color: white; -webkit-tap-highlight-color: transparent; }
-        
-        /* Glass Effect */
-        .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .glass-active {
-            background: rgba(59, 130, 246, 0.15); /* Blue tint */
-            border: 1px solid rgba(59, 130, 246, 0.3);
-        }
-
-        /* Avatar Active Ring */
-        .avatar-active img { border: 3px solid #3b82f6; padding: 2px; }
-        .avatar-inactive img { border: 3px solid transparent; opacity: 0.6; }
-
-        /* Hide Scrollbar */
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .avatar-active img { border: 2px solid #3b82f6; padding: 2px; }
+        .avatar-inactive img { opacity: 0.5; filter: grayscale(100%); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Skeleton Animation */
-        .skeleton {
-            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            color: transparent !important;
-            border-radius: 4px;
-        }
+        .skeleton { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%); background-size: 200% 100%; animation: loading 1.5s infinite; color: transparent !important; border-radius: 4px; }
         @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     </style>
 </head>
@@ -51,240 +28,185 @@
 
     <div class="max-w-md mx-auto relative">
         
-        <div class="pt-8 pb-2 pl-6">
-            <p class="text-xs text-slate-400 font-medium mb-3 uppercase tracking-wider">Pilih Tim:</p>
-            <div class="flex gap-4 overflow-x-auto no-scrollbar pr-6" id="user-list-container">
-                </div>
+        <div id="admin-panel" class="hidden pt-8 pb-2 pl-6">
+            <p class="text-[10px] text-slate-400 font-bold mb-3 uppercase tracking-widest">TIM DASHBOARD</p>
+            <div class="flex gap-4 overflow-x-auto no-scrollbar pr-6" id="user-list-container"></div>
         </div>
 
-        <div class="px-6 my-4">
-            <div class="p-1 glass rounded-xl flex gap-1 relative">
-                <button onclick="switchTab('cashflow')" id="btn-cashflow" class="flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300">
-                    CASHFLOW
-                </button>
-                <button onclick="switchTab('gamping')" id="btn-gamping" class="flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300">
-                    GAMPING
-                </button>
+        <div class="px-6 my-4 pt-6" id="main-content">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-xl font-bold" id="greeting-name">Loading...</h1>
+                <div class="px-2 py-1 bg-blue-500/20 text-blue-400 text-[10px] rounded border border-blue-500/30 uppercase font-bold" id="role-badge">USER</div>
+            </div>
+
+            <div class="p-1 glass rounded-xl flex gap-1">
+                <button onclick="switchTab('cashflow')" id="btn-cashflow" class="flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300 bg-blue-600 text-white shadow-lg">CASHFLOW</button>
+                <button onclick="switchTab('gamping')" id="btn-gamping" class="flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300 text-slate-400">GAMPING</button>
             </div>
         </div>
 
         <div class="px-6 mb-6">
-            <div class="relative w-full aspect-[1.8/1] rounded-2xl overflow-hidden shadow-2xl group">
-                <div class="absolute inset-0 bg-gradient-to-br from-slate-800 to-black transition-all duration-500 group-hover:scale-105"></div>
-                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
-                
-                <div class="relative z-10 p-6 flex flex-col justify-between h-full">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-slate-400 text-[10px] font-semibold tracking-widest uppercase">Total Saldo</p>
-                            <h2 class="text-2xl font-bold text-white mt-1 tracking-tight" id="total-saldo"><span class="skeleton">Rp 00.000.000</span></h2>
-                        </div>
-                        <i class="fa-brands fa-cc-visa text-3xl text-white/20"></i>
+            <div class="relative w-full aspect-[1.9/1] rounded-2xl overflow-hidden shadow-2xl group border border-white/5">
+                <div class="absolute inset-0 bg-gradient-to-br from-slate-800 to-black"></div>
+                <div class="relative z-10 p-5 flex flex-col justify-between h-full">
+                    <div>
+                        <p class="text-slate-400 text-[10px] uppercase tracking-widest font-semibold">Saldo Aktif</p>
+                        <h2 class="text-2xl font-bold text-white mt-1" id="total-saldo"><span class="skeleton">Rp ...</span></h2>
                     </div>
-
-                    <div class="flex gap-4 mt-2">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-1 mb-1">
-                                <div class="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                                    <i class="fa-solid fa-arrow-down text-[8px] text-emerald-400"></i>
-                                </div>
-                                <span class="text-[10px] text-slate-400">Masuk</span>
-                            </div>
-                            <p class="text-xs font-semibold text-white" id="total-masuk"><span class="skeleton">Rp 0</span></p>
+                    <div class="flex gap-3 mt-2">
+                        <div class="flex-1 bg-white/5 p-2 rounded backdrop-blur-sm">
+                            <span class="text-[9px] text-slate-400 block mb-1">Pemasukan</span>
+                            <p class="text-xs font-bold text-emerald-400" id="total-masuk">-</p>
                         </div>
-                        <div class="flex-1">
-                            <div class="flex items-center gap-1 mb-1">
-                                <div class="w-4 h-4 rounded-full bg-rose-500/20 flex items-center justify-center">
-                                    <i class="fa-solid fa-arrow-up text-[8px] text-rose-400"></i>
-                                </div>
-                                <span class="text-[10px] text-slate-400">Keluar</span>
-                            </div>
-                            <p class="text-xs font-semibold text-white" id="total-keluar"><span class="skeleton">Rp 0</span></p>
+                        <div class="flex-1 bg-white/5 p-2 rounded backdrop-blur-sm">
+                            <span class="text-[9px] text-slate-400 block mb-1">Pengeluaran</span>
+                            <p class="text-xs font-bold text-rose-400" id="total-keluar">-</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="px-6 pb-20">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-md font-bold text-white">Riwayat Transaksi</h3>
-                <span class="text-[10px] text-blue-400 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20">Terbaru</span>
-            </div>
-
+        <div class="px-6">
+            <h3 class="text-sm font-bold text-white mb-4">Mutasi Terakhir</h3>
             <div id="loading-list" class="space-y-3 hidden">
-                <div class="glass p-4 rounded-xl flex items-center gap-3 animate-pulse">
-                    <div class="w-10 h-10 rounded-full bg-slate-700"></div>
-                    <div class="flex-1 space-y-2">
-                        <div class="h-2 w-20 bg-slate-700 rounded"></div>
-                        <div class="h-2 w-12 bg-slate-700 rounded"></div>
-                    </div>
-                </div>
+                <div class="glass p-3 rounded-xl flex items-center gap-3 animate-pulse"><div class="w-10 h-10 rounded-full bg-slate-700"></div><div class="flex-1 h-4 bg-slate-700 rounded"></div></div>
             </div>
-
-            <div id="transaksi-list" class="space-y-3">
-                </div>
-        </div>
-
-    </div>
-
-    <div class="fixed bottom-6 left-6 right-6 max-w-md mx-auto z-50">
-        <div class="glass rounded-2xl p-3 flex justify-around items-center shadow-2xl backdrop-blur-xl bg-black/40">
-            <button class="flex flex-col items-center gap-1 text-blue-400 transition transform active:scale-95">
-                <i class="fa-solid fa-house text-lg"></i>
-            </button>
-            <button class="flex flex-col items-center gap-1 text-slate-500 hover:text-white transition transform active:scale-95">
-                <i class="fa-solid fa-chart-pie text-lg"></i>
-            </button>
-            <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white -mt-8 border-4 border-[#0f172a] shadow-lg shadow-blue-600/30 active:scale-90 transition">
-                <i class="fa-solid fa-plus"></i>
-            </div>
-            <button class="flex flex-col items-center gap-1 text-slate-500 hover:text-white transition transform active:scale-95">
-                <i class="fa-solid fa-file-invoice text-lg"></i>
-            </button>
-            <button onclick="fetchData()" class="flex flex-col items-center gap-1 text-slate-500 hover:text-white transition transform active:scale-95">
-                <i class="fa-solid fa-rotate-right text-lg"></i>
-            </button>
+            <div id="transaksi-list" class="space-y-3 pb-24"></div>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // KONFIGURASI LINK SCRIPT (GANTI INI!)
+        // GANTI URL INI DENGAN MILIKMU (WAJIB!)
         // ==========================================
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxWwXG9K2lsdLdPXsqxWnWpTMMS6Ea-Izb8hl0PRWAZa2jCxPp4ux9TjRNef8Ryd922/exec';
         
-        // Data Tim (ID harus sesuai dengan USER_MAP di Google Script)
-        const teamMembers = [
-            { id: '197364854', name: 'Wawan', color: '0D8ABC' },
-            { id: '5670063936', name: 'Yudi', color: 'E11D48' },
-            { id: '8099864512', name: 'Dimas', color: 'F59E0B' },
-            { id: '7905827469', name: 'Erny', color: '10B981' }
-        ];
+        // Inisialisasi Telegram
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Full Screen
 
-        // State Aplikasi
-        let activeUser = '197364854'; // Default Wawan
-        let activeTab = 'cashflow';   // Default Tab
-
-        // Render User List saat load
-        function renderUserList() {
-            const container = document.getElementById('user-list-container');
-            container.innerHTML = '';
-            
-            teamMembers.forEach(user => {
-                const isActive = user.id === activeUser;
-                const activeClass = isActive ? 'avatar-active' : 'avatar-inactive grayscale hover:grayscale-0';
-                
-                const html = `
-                    <button onclick="changeUser('${user.id}')" class="flex flex-col items-center gap-1 min-w-[60px] transition-all duration-300 ${activeClass}">
-                        <div class="w-14 h-14 rounded-full p-[2px] bg-gradient-to-tr from-slate-700 to-slate-800 shadow-lg">
-                            <img src="https://ui-avatars.com/api/?name=${user.name}&background=${user.color}&color=fff&size=128" 
-                                 class="w-full h-full rounded-full object-cover transition-transform duration-300 ${isActive ? 'scale-100' : 'scale-90'}">
-                        </div>
-                        <span class="text-[10px] font-semibold tracking-wide ${isActive ? 'text-white' : 'text-slate-500'}">${user.name}</span>
-                    </button>
-                `;
-                container.innerHTML += html;
-            });
-        }
-
-        // Ganti User
-        function changeUser(id) {
-            if (activeUser === id) return;
-            activeUser = id;
-            renderUserList();
-            fetchData();
-        }
-
-        // Ganti Tab (Cashflow/Gamping)
-        function switchTab(tab) {
-            activeTab = tab;
-            
-            // Update UI Button
-            const btnCashflow = document.getElementById('btn-cashflow');
-            const btnGamping = document.getElementById('btn-gamping');
-            
-            if (tab === 'cashflow') {
-                btnCashflow.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300 bg-blue-600 text-white shadow-lg shadow-blue-600/30";
-                btnGamping.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300 text-slate-400 hover:text-white hover:bg-white/5";
-            } else {
-                btnGamping.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300 bg-blue-600 text-white shadow-lg shadow-blue-600/30";
-                btnCashflow.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300 text-slate-400 hover:text-white hover:bg-white/5";
-            }
-            
-            fetchData();
-        }
+        // Ambil ID User dari Telegram (Jika dibuka di browser laptop, fallback ke ID Wawan buat ngetes)
+        const myTelegramId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : '197364854';
+        
+        let currentTargetId = myTelegramId; // Siapa yang sedang dilihat datanya
+        let currentTab = 'cashflow';
 
         async function fetchData() {
-            // UI Loading State
+            // UI Loading
             document.getElementById('loading-list').classList.remove('hidden');
             document.getElementById('transaksi-list').classList.add('hidden');
-            document.getElementById('total-saldo').innerHTML = '<span class="skeleton">Rp 00000</span>';
-            
+            document.getElementById('total-saldo').innerHTML = '<span class="skeleton">Rp ...</span>';
+
             try {
-                // Panggil API dengan ID User & Tab yang aktif
-                const response = await fetch(`${SCRIPT_URL}?uid=${activeUser}&tab=${activeTab}`);
+                // Kirim Parameter: uid (Siapa yg buka) & target (Data siapa yg diminta)
+                const url = `${SCRIPT_URL}?uid=${myTelegramId}&target=${currentTargetId}&tab=${currentTab}`;
+                const response = await fetch(url);
                 const data = await response.json();
 
                 if (data.error) {
-                    // Handle jika user tidak punya tab tersebut (misal Yudi gak punya Gamping)
-                    document.getElementById('total-saldo').innerText = "Tidak Ada Data";
-                    document.getElementById('total-masuk').innerText = "-";
-                    document.getElementById('total-keluar').innerText = "-";
-                    document.getElementById('transaksi-list').innerHTML = `<div class="text-center text-slate-500 py-6 text-xs">Data ${activeTab} tidak ditemukan untuk user ini.</div>`;
-                } else {
-                    // Update Angka
-                    document.getElementById('total-saldo').innerText = data.saldo;
-                    document.getElementById('total-masuk').innerText = data.masuk;
-                    document.getElementById('total-keluar').innerText = data.keluar;
-
-                    // Render List
-                    const listContainer = document.getElementById('transaksi-list');
-                    listContainer.innerHTML = '';
-
-                    if (data.riwayat && data.riwayat.length > 0) {
-                        data.riwayat.forEach((trx, index) => {
-                            const isMasuk = trx.tipe === 'masuk';
-                            const colorClass = isMasuk ? 'text-emerald-400' : 'text-rose-400';
-                            const iconColor = isMasuk ? 'text-emerald-400' : 'text-rose-400';
-                            const bgIcon = isMasuk ? 'bg-emerald-500/10' : 'bg-rose-500/10';
-                            
-                            // Delay animasi agar muncul satu-satu
-                            const delay = index * 100;
-
-                            const html = `
-                                <div class="glass p-4 rounded-xl flex justify-between items-center active:scale-95 transition transform duration-200 hover:bg-white/5" style="animation: fadeInUp 0.5s ease forwards ${delay}ms">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full ${bgIcon} flex items-center justify-center text-lg border border-white/5">
-                                            <i class="fa-solid ${trx.icon || 'fa-bag-shopping'} ${iconColor}"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-medium text-slate-200 line-clamp-1">${trx.item}</p>
-                                            <p class="text-[10px] text-slate-500">${trx.tgl}</p>
-                                        </div>
-                                    </div>
-                                    <span class="text-sm font-bold ${colorClass} whitespace-nowrap">${isMasuk?'+':'-'} ${trx.nominal}</span>
-                                </div>
-                            `;
-                            listContainer.innerHTML += html;
-                        });
-                    } else {
-                        listContainer.innerHTML = '<div class="text-center text-slate-500 py-6 text-xs">Belum ada transaksi bulan ini.</div>';
-                    }
+                    alert(data.msg);
+                    return;
                 }
 
+                // 1. Update Header Nama
+                document.getElementById('greeting-name').innerText = data.nama || "User";
+
+                // 2. Cek apakah boleh lihat Tim? (Fitur Admin)
+                const adminPanel = document.getElementById('admin-panel');
+                if (data.team && data.team.length > 0) {
+                    adminPanel.classList.remove('hidden'); // Munculkan panel
+                    document.getElementById('role-badge').innerText = "ADMIN";
+                    document.getElementById('role-badge').className = "px-2 py-1 bg-yellow-500/20 text-yellow-400 text-[10px] rounded border border-yellow-500/30 uppercase font-bold";
+                    
+                    // Render List Avatar Tim
+                    renderTeamList(data.team);
+                } else {
+                    adminPanel.classList.add('hidden'); // Sembunyikan panel
+                }
+
+                // 3. Update Angka Saldo
+                document.getElementById('total-saldo').innerText = data.saldo;
+                document.getElementById('total-masuk').innerText = data.masuk;
+                document.getElementById('total-keluar').innerText = data.keluar;
+
+                // 4. Render List Transaksi
+                renderTransactions(data.riwayat);
+
             } catch (error) {
-                console.error(error);
+                console.error("Error:", error);
+                document.getElementById('total-saldo').innerText = "Gagal Memuat";
             } finally {
-                // Matikan Loading
                 document.getElementById('loading-list').classList.add('hidden');
                 document.getElementById('transaksi-list').classList.remove('hidden');
             }
         }
 
-        // Initialize
-        renderUserList();
-        switchTab('cashflow'); // Set default UI state
+        function renderTeamList(team) {
+            const container = document.getElementById('user-list-container');
+            container.innerHTML = ''; // Reset
+            
+            team.forEach(user => {
+                const isActive = String(user.id) === String(currentTargetId);
+                const activeStyle = isActive ? 'avatar-active scale-110' : 'avatar-inactive opacity-60 scale-90';
+                
+                // Gunakan function click untuk ganti targetId
+                const html = `
+                    <div onclick="changeTarget('${user.id}')" class="flex flex-col items-center gap-1 min-w-[50px] cursor-pointer transition-all duration-300 ${activeStyle}">
+                        <img src="https://ui-avatars.com/api/?name=${user.name}&background=${user.color}&color=fff" class="w-12 h-12 rounded-full shadow-lg">
+                        <span class="text-[9px] font-bold tracking-wide ${isActive ? 'text-white' : 'text-slate-500'}">${user.name}</span>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        function renderTransactions(riwayat) {
+            const list = document.getElementById('transaksi-list');
+            list.innerHTML = '';
+            
+            if (!riwayat || riwayat.length === 0) {
+                list.innerHTML = '<div class="text-center text-slate-600 text-xs py-10">Belum ada transaksi</div>';
+                return;
+            }
+
+            riwayat.forEach((trx, i) => {
+                const isMasuk = trx.tipe === 'masuk';
+                const color = isMasuk ? 'text-emerald-400' : 'text-rose-400';
+                const bgIcon = isMasuk ? 'bg-emerald-500/10' : 'bg-rose-500/10';
+                
+                list.innerHTML += `
+                <div class="glass p-3 rounded-xl flex items-center justify-between hover:bg-white/5 transition border-l-2 ${isMasuk ? 'border-emerald-500' : 'border-rose-500'}" style="animation: fadeUp 0.3s forwards ${i*0.1}s">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full ${bgIcon} flex items-center justify-center text-sm ${color}">
+                            <i class="fa-solid ${trx.icon}"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-slate-200">${trx.item}</p>
+                            <p class="text-[10px] text-slate-500">${trx.tgl}</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold ${color}">${isMasuk?'+':'-'} ${trx.nominal}</span>
+                </div>`;
+            });
+        }
+
+        function changeTarget(id) {
+            if (currentTargetId === id) return;
+            currentTargetId = id;
+            fetchData();
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            // Update UI Button Style
+            document.getElementById('btn-cashflow').className = `flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all ${tab==='cashflow'?'bg-blue-600 text-white shadow-lg':'text-slate-400'}`;
+            document.getElementById('btn-gamping').className = `flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all ${tab==='gamping'?'bg-blue-600 text-white shadow-lg':'text-slate-400'}`;
+            fetchData();
+        }
+
+        // Start
+        fetchData();
 
     </script>
 </body>
